@@ -1,8 +1,7 @@
 #include <Arduino.h>
 #include "ESP8266WiFi.h"
 
-#define ssid "red3"
-#define password "otraclave3"
+#include "config_home.h"
 
 void setup()
 {
@@ -14,7 +13,7 @@ void setup()
   {
   }
 
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
