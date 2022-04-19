@@ -5,3 +5,4 @@
 .vscode/ipch
 src/config_*.h
 !src/config_template.h
+examples/

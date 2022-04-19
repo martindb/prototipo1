@@ -27,6 +27,3 @@ Tecnologias:
 - Node-RED
 - Cloud?
 
-
-
-

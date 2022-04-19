@@ -1,34 +1,58 @@
 #include <Arduino.h>
-#include "ESP8266WiFi.h"
+#include <ESP8266WiFi.h>
+#include <ArduinoHttpClient.h>
+#include <PubSubClient.h>
 
+// Ver src/config_template.h
 #include "config_home.h"
+#include "functions.h"
 
-void setup()
-{
-  Serial.begin(74880);
-  Serial.setTimeout(2000);
 
-  // Wait for serial to initialize.
-  while (!Serial)
+WiFiClient wifi_client;
+
+void setup() {
+
+  // init general (serial, wifi, gprs, etc)
+  serial_init();
+  wifi_init();
+
+  // conexion gprs
+  boolean gprs_conn = false;
+
+  // temperatura
+  // energia
+  // power del supervisor
+  // json => topico de mqtt
+
+  // wifi?
+  boolean wifi_conn = wifi_check();
+  
+  // internet?
+  boolean internet_conn = false;
+  if(wifi_conn) {
+    internet_conn = internet_check(wifi_client, INTERNET1, PORT1);
+    if(!internet_conn) {
+      internet_conn = internet_check(wifi_client, INTERNET2, PORT2);
+    }
+  } else if (gprs_conn)
   {
-  }
-
-  WiFi.begin(SSID, PASSWORD);
-  while (WiFi.status() != WL_CONNECTED)
+    /* Mandar por aca la verificacion de internet*/
+    Serial.println("No hay wifi, pruebo internet por GPRS");
+  } else
   {
-    delay(500);
-    Serial.print("*");
+    // si no se puede publicar en mqtt, envio sms
+    /* Mandar por SMS algo de info (o todo?) */
+    Serial.println("No hay wifi ni gprs... mando algo por SMS");
   }
+    
+  // envio json por mqtt x internet
 
-  Serial.println("");
-  Serial.println("WiFi connection Successful");
-  Serial.print("The IP Address of ESP8266 Module is: ");
-  Serial.print(WiFi.localIP()); // Print the IP address
+  // si no se puede enviar mqtt, aviso por sms...
 
-  ESP.deepSleep(10e6);
-
+  // deep sleep
+  ESP.deepSleep(SLEEPTIME);
 }
 
-void loop()
-{
+void loop() { 
+  // Aca nada, porque se va a deep sleep
 }
