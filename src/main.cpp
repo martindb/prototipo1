@@ -2,6 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <ArduinoHttpClient.h>
 #include <PubSubClient.h>
+#include <ArduinoJson.h>
 
 // Ver src/config_template.h
 #include "config_home.h"
@@ -9,6 +10,7 @@
 
 
 WiFiClient wifi_client;
+StaticJsonDocument<200> doc;
 
 void setup() {
 
@@ -18,36 +20,59 @@ void setup() {
 
   // conexion gprs
   boolean gprs_conn = false;
+  doc["connectivity"]["gprs"] = gprs_conn;
 
   // temperatura
   // energia
   // power del supervisor
-  // json => topico de mqtt
-
+  
   // wifi?
   boolean wifi_conn = wifi_check();
-  
+  doc["connectivity"]["wifi"] = wifi_conn;
+
   // internet?
   boolean internet_conn = false;
+  doc["connectivity"]["internet"] = internet_conn;
+
   if(wifi_conn) {
     internet_conn = internet_check(wifi_client, INTERNET1, PORT1);
     if(!internet_conn) {
       internet_conn = internet_check(wifi_client, INTERNET2, PORT2);
     }
-  } else if (gprs_conn)
+    doc["connectivity"]["internet"] = internet_conn;
+  }
+  else if (gprs_conn)
   {
     /* Mandar por aca la verificacion de internet*/
     Serial.println("No hay wifi, pruebo internet por GPRS");
-  } else
-  {
-    // si no se puede publicar en mqtt, envio sms
-    /* Mandar por SMS algo de info (o todo?) */
-    Serial.println("No hay wifi ni gprs... mando algo por SMS");
   }
-    
-  // envio json por mqtt x internet
 
-  // si no se puede enviar mqtt, aviso por sms...
+  // MQTT?
+  boolean mqtt_conn = false;
+  if (internet_conn)
+  {
+    doc["connectivity"]["mqtt"] = mqtt_conn;
+  }
+
+  // send json
+  boolean mqtt_sent = false;
+  boolean sms_sent = false;
+
+  doc["connectivity"]["mqtt sent"] = mqtt_sent;
+  doc["connectivity"]["sms sent"] = sms_sent;
+
+  if(mqtt_conn) {
+    // envio json por mqtt x internet
+    // hay que setear mqtt_sent a true si salio
+  }
+
+  if(!mqtt_sent){
+    // si no se puede enviar mqtt, aviso por sms...
+    // hay que setear sms_sent a true si salio
+  }
+
+
+  serializeJsonPretty(doc, Serial);
 
   // deep sleep
   ESP.deepSleep(SLEEPTIME);

@@ -41,10 +41,10 @@ boolean internet_check(WiFiClient wifi_client, String host, int port) {
   int statusCode = client.responseStatusCode();
   if (statusCode >= 200 && statusCode < 400)
   {
-    Serial.printf("\nInternet OK (%s:%d - %d)", host.c_str(), port, statusCode);
+    Serial.printf("\nInternet OK (%s:%d - %d)\n", host.c_str(), port, statusCode);
     return true;
   } else {
-    Serial.printf("\nInternet NOK (%s:%d - %d)", host.c_str(), port, statusCode);
+    Serial.printf("\nInternet NOK (%s:%d - %d)\n", host.c_str(), port, statusCode);
     return false;
   }
 }
