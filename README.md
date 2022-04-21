@@ -30,10 +30,10 @@ Tecnologias:
 
 
 Hardware:
-- nodemcu esp8266
-- powerbank x4 (https://articulo.mercadolibre.com.ar/MLA-899661886-modulo-cargador-power-bank-x4-bateria-18650-usb-c-micro-3a-_JM)
-- sim800 (https://articulo.mercadolibre.com.ar/MLA-876768223-modulo-celular-gsm-gprs-sim800-arduino-m2m-iot-sim800l-_JM)
-- 18db20 (tengo algunos, comprar mas)
-- optoacopladores (alterna vs mods al modulo?)
-- fuente integrada? (da la potencia x1?)
+- nodemcu esp8266 v2 (lolin)
+- powerbank x4 V9 (https://articulo.mercadolibre.com.ar/MLA-899661886-modulo-cargador-power-bank-x4-bateria-18650-usb-c-micro-3a-_JM)
+- SIM800L EVB (https://articulo.mercadolibre.com.ar/MLA-876768223-modulo-celular-gsm-gprs-sim800-arduino-m2m-iot-sim800l-_JM)
+- DS18B20 (tengo algunos, comprar mas?)
+- optoacopladores sfh620 / tlp620 / h11aa1
+- fuente switching 5v 5a
 
