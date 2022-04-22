@@ -11,6 +11,7 @@
 
 WiFiClient wifi_client;
 StaticJsonDocument<200> doc;
+PubSubClient mqttClient;
 
 void setup() {
 
@@ -51,6 +52,16 @@ void setup() {
   boolean mqtt_conn = false;
   if (internet_conn)
   {
+    if(wifi_conn){
+      mqttClient.setClient(wifi_client);
+      mqttClient.setServer(MQTT_BROKER_ADRESS, MQTT_PORT);
+      while (!mqttClient.connected())
+      {
+        mqttClient.connect(HOSTNAME, MQTT_USER, MQTT_PASS);
+        delay(5000);
+      }
+    }
+    mqtt_conn = true;
     doc["connectivity"]["mqtt"] = mqtt_conn;
   }
 
@@ -64,11 +75,15 @@ void setup() {
   if(mqtt_conn) {
     // envio json por mqtt x internet
     // hay que setear mqtt_sent a true si salio
+    mqtt_sent = mqttClient.publish("pepe", "Hola mundo");
+    doc["connectivity"]["mqtt sent"] = mqtt_sent;
+    mqttClient.disconnect();
   }
 
   if(!mqtt_sent){
     // si no se puede enviar mqtt, aviso por sms...
     // hay que setear sms_sent a true si salio
+    Serial.println("no salio");
   }
 
 
