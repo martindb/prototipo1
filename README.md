@@ -26,7 +26,7 @@ Tecnologias:
 - MQTT
   - Payload en json
 - Node-RED
-- Cloud?
+- Cloud (AWS?)
 
 
 Hardware:

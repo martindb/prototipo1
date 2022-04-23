@@ -4,20 +4,22 @@
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 
+
+WiFiClient wifi_client;
+StaticJsonDocument<300> doc;
+PubSubClient mqttClient;
+
 // Ver src/config_template.h
 #include "config_home.h"
 #include "functions.h"
 
-
-WiFiClient wifi_client;
-StaticJsonDocument<200> doc;
-PubSubClient mqttClient;
 
 void setup() {
 
   // init general (serial, wifi, gprs, etc)
   serial_init();
   wifi_init();
+  mqtt_init();
 
   // conexion gprs
   boolean gprs_conn = false;
@@ -53,17 +55,16 @@ void setup() {
   if (internet_conn)
   {
     if(wifi_conn){
-      mqttClient.setClient(wifi_client);
-      mqttClient.setServer(MQTT_BROKER_ADRESS, MQTT_PORT);
-      while (!mqttClient.connected())
-      {
-        mqttClient.connect(HOSTNAME, MQTT_USER, MQTT_PASS);
-        delay(5000);
-      }
+      mqtt_conn = mqtt_check(wifi_client);
+    } 
+    else if (gprs_conn)
+    {
+      // mqtt_conn = mqtt_check(gprs_client);
     }
-    mqtt_conn = true;
+
     doc["connectivity"]["mqtt"] = mqtt_conn;
   }
+
 
   // send json
   boolean mqtt_sent = false;

@@ -16,6 +16,10 @@ void wifi_init() {
   WiFi.begin(SSID, PASSWORD);
 }
 
+void mqtt_init() {
+  mqttClient.setServer(MQTT_BROKER_ADRESS, MQTT_PORT);
+}
+
 boolean wifi_check() {
   unsigned int timeout = 15;
   unsigned int counter = 0;
@@ -33,12 +37,32 @@ boolean wifi_check() {
   return true;
 }
 
-boolean internet_check(WiFiClient wifi_client, String host, int port) {
-  HttpClient client = HttpClient(wifi_client, host, port);
-  client.beginRequest();
-  client.get("/");
-  client.endRequest();
-  int statusCode = client.responseStatusCode();
+boolean mqtt_check(WiFiClient &client) {
+  unsigned int timeout = 15;
+  unsigned int counter = 0;
+  mqttClient.setClient(client);
+  while (!mqttClient.connected())
+  {
+    mqttClient.connect(HOSTNAME, MQTT_USER, MQTT_PASS);
+    counter++;
+    Serial.print(".");
+    delay(1000);
+    if (counter > timeout)
+    {
+      Serial.printf("\nCan't connect to mqtt %s\n", MQTT_BROKER_ADRESS);
+      return false;
+    }
+  }
+  Serial.printf("\nConnected to mqtt %s\n", MQTT_BROKER_ADRESS);
+  return true;
+}
+
+boolean internet_check(WiFiClient &client, String host, int port) {
+  HttpClient http_client = HttpClient(client, host, port);
+  http_client.beginRequest();
+  http_client.get("/");
+  http_client.endRequest();
+  int statusCode = http_client.responseStatusCode();
   if (statusCode >= 200 && statusCode < 400)
   {
     Serial.printf("\nInternet OK (%s:%d - %d)\n", host.c_str(), port, statusCode);
