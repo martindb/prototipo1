@@ -57,7 +57,7 @@ boolean mqtt_check(WiFiClient &client) {
   return true;
 }
 
-boolean internet_check(WiFiClient &client, String host, int port) {
+boolean internet_check(Client &client, String host, int port) {
   HttpClient http_client = HttpClient(client, host, port);
   http_client.beginRequest();
   http_client.get("/");
@@ -73,5 +73,57 @@ boolean internet_check(WiFiClient &client, String host, int port) {
   }
 }
 
+double bat_voltage(int pin) {
+  double v = 0;
+  for (unsigned int i = 0; i < 10; i++)
+  {
+    v = v + analogRead(pin);
+    delay(5);
+  }
+  v = v / 10 / 1024 * 5.2;
+  v = (int)(v * 100 + 0.5) / 100.0;
+  return v;
+}
+
+int bat_percentage(double voltage) {
+
+  float fVoltageMatrix[22][2] = {
+      {4.2, 100},
+      {4.15, 95},
+      {4.11, 90},
+      {4.08, 85},
+      {4.02, 80},
+      {3.98, 75},
+      {3.95, 70},
+      {3.91, 65},
+      {3.87, 60},
+      {3.85, 55},
+      {3.84, 50},
+      {3.82, 45},
+      {3.80, 40},
+      {3.79, 35},
+      {3.77, 30},
+      {3.75, 25},
+      {3.73, 20},
+      {3.71, 15},
+      {3.69, 10},
+      {3.61, 5},
+      {3.27, 0},
+      {0, 0}};
+
+  int i, perc;
+
+  perc = 100;
+
+  for (i = 20; i >= 0; i--)
+  {
+    if (fVoltageMatrix[i][0] >= voltage)
+    {
+      perc = fVoltageMatrix[i + 1][1];
+      break;
+    }
+  }
+  return perc;
+}
 
 #endif

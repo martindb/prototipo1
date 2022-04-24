@@ -4,7 +4,6 @@
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 
-
 WiFiClient wifi_client;
 StaticJsonDocument<300> doc;
 PubSubClient mqttClient;
@@ -27,8 +26,13 @@ void setup() {
 
   // temperatura
   // energia
+
   // power del supervisor
-  
+  double Vvalue = 0;
+  Vvalue = bat_voltage(A0);
+  doc["power"]["vbat"] = Vvalue;
+  doc["power"]["pbat"] = bat_percentage(Vvalue);
+
   // wifi?
   boolean wifi_conn = wifi_check();
   doc["connectivity"]["wifi"] = wifi_conn;
@@ -76,7 +80,12 @@ void setup() {
   if(mqtt_conn) {
     // envio json por mqtt x internet
     // hay que setear mqtt_sent a true si salio
-    mqtt_sent = mqttClient.publish("pepe", "Hola mundo");
+    //mqtt_sent = mqttClient.publish("pepe", "Hola mundo");
+    mqttClient.beginPublish("pepe", measureJson(doc), false);
+    serializeJson(doc, mqttClient);
+    mqtt_sent = mqttClient.endPublish();
+    // https: // arduinojson.org/v6/how-to/use-arduinojson-with-pubsubclient/
+    
     doc["connectivity"]["mqtt sent"] = mqtt_sent;
     mqttClient.disconnect();
   }
