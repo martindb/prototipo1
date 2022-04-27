@@ -223,7 +223,7 @@ int bat_percentage(double voltage) {
 
   int perc;
 
-  perc = ((voltage - 3) / (4.17 - 3)) * 100;
+  perc = ((voltage - 3) / (4.15 - 3)) * 100;
   if (perc < 100)
     return perc;
   else

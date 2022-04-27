@@ -39,10 +39,6 @@ void setup() {
   mqtt_init();
   Serial.printf("\n\n::: Mqtt init %ld\n", millis());
 
-  // conexion gprs
-  boolean gprs_conn = false;
-  doc["connectivity"]["gprs"] = gprs_conn;
-
   // temperatura
   // energia
 
@@ -57,6 +53,21 @@ void setup() {
   boolean wifi_conn = wifi_check();
   doc["connectivity"]["wifi"] = wifi_conn;
   Serial.printf("\n\n::: Wifi check %ld\n", millis());
+
+  // conexion gprs
+  boolean gprs_conn = false;
+  if (rtcData.gsmcheck == 0)
+  {
+    // Aca hay que chequear el gsm/gprs
+    doc["connectivity"]["gprs"] = gprs_conn;
+    doc["connectivity"]["gprs tested"] = true;
+  }
+  else
+  {
+    doc["connectivity"]["gprs"] = gprs_conn;
+    doc["connectivity"]["gprs tested"] = false;
+  }
+
 
   // internet?
   boolean internet_conn = false;
