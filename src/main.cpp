@@ -3,6 +3,8 @@
 #include <ArduinoHttpClient.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
+#include <StreamUtils.h>
+
 extern "C"
 {
 #include "user_interface.h"
@@ -99,11 +101,15 @@ void setup() {
 
   if(mqtt_conn) {
     // envio json por mqtt x internet
-    // hay que setear mqtt_sent a true si salio
-    //mqtt_sent = mqttClient.publish("pepe", "Hola mundo");
-    mqttClient.beginPublish("pepe1", measureJson(doc), false);
+    mqttClient.beginPublish(MQTT_USER "/" HOSTNAME, measureJson(doc), false);
     serializeJson(doc, mqttClient);
     mqtt_sent = mqttClient.endPublish();
+
+    // mqttClient.beginPublish(MQTT_USER "/" HOSTNAME, measureJson(doc), false);
+    // BufferingPrint bufferedClient(mqttClient, 32);
+    // serializeJson(doc, bufferedClient);
+    // bufferedClient.flush();
+    // mqtt_sent = mqttClient.endPublish();
     // https: // arduinojson.org/v6/how-to/use-arduinojson-with-pubsubclient/
     
     doc["connectivity"]["mqtt sent"] = mqtt_sent;
