@@ -1,0 +1,288 @@
+:: Serial init 73
+
+Connecting to: red3 :
+
+:: Wifi init 75
+:
+
+:: Mqtt init 75
+:
+
+:: Bat sensor 127
+....
+Wifi connected. IP address: 192.168.1.175
+:
+
+:: Wifi check 4800
+
+Internet OK (www.amazon.com:80 - 301)
+:
+
+:: Internet check 5825
+.
+Connected to mqtt iot.martindb.com.ar
+:
+
+:: Mqtt check 7184
+:
+
+:: Mqtt send 7576
+{
+  "connectivity": {
+    "gprs": false,
+    "wifi": true,
+    "internet": true,
+    "mqtt": true,
+    "mqtt sent": true,
+    "sms sent": false
+  },
+  "power": {
+    "vbat": 0,
+    "pbat": 0
+  }
+}:
+
+:: Deep Sleep 7590
+
+-----------------------
+NO_RFCALL
+
+:: Serial init 45
+
+Connecting to: red3 :
+
+:: Wifi init 47
+:
+
+:: Mqtt init 47
+:
+
+:: Bat sensor 98
+....
+Wifi connected. IP address: 192.168.1.175
+:
+
+:: Wifi check 4772
+
+Internet OK (www.amazon.com:80 - 301)
+:
+
+:: Internet check 5800
+.
+Connected to mqtt iot.martindb.com.ar
+:
+
+:: Mqtt check 7168
+:
+
+:: Mqtt send 7593
+{
+  "connectivity": {
+    "gprs": false,
+    "wifi": true,
+    "internet": true,
+    "mqtt": true,
+    "mqtt sent": true,
+    "sms sent": false
+  },
+  "power": {
+    "vbat": 0,
+    "pbat": 0
+  }
+}:
+
+:: Deep Sleep 7607
+
+-----------------
+persistent false
+
+:: Serial init 45
+
+Connecting to: red3 :
+
+:: Wifi init 47
+:
+
+:: Mqtt init 47
+:
+
+:: Bat sensor 98
+....
+Wifi connected. IP address: 192.168.1.175
+:
+
+:: Wifi check 4772
+
+Internet OK (www.amazon.com:80 - 301)
+:
+
+:: Internet check 5799
+.
+Connected to mqtt iot.martindb.com.ar
+:
+
+:: Mqtt check 7154
+:
+
+:: Mqtt send 7556
+{
+  "connectivity": {
+    "gprs": false,
+    "wifi": true,
+    "internet": true,
+    "mqtt": true,
+    "mqtt sent": true,
+    "sms sent": false
+  },
+  "power": {
+    "vbat": 0,
+    "pbat": 0
+  }
+}:
+
+:: Deep Sleep 7570
+
+---------------------
+Reduccion de los delay en wifi y mqtt
+
+:: Serial init 45
+
+Connecting to: red3 :
+
+:: Wifi init 47
+:
+
+:: Mqtt init 47
+:
+
+:: Bat sensor 98
+.......
+Wifi connected. IP address: 192.168.1.175
+:
+
+:: Wifi check 4272
+
+Internet OK (www.amazon.com:80 - 301)
+:
+
+:: Internet check 5313
+.
+Connected to mqtt iot.martindb.com.ar
+:
+
+:: Mqtt check 6371
+:
+
+:: Mqtt send 6759
+{
+  "connectivity": {
+    "gprs": false,
+    "wifi": true,
+    "internet": true,
+    "mqtt": true,
+    "mqtt sent": true,
+    "sms sent": false
+  },
+  "power": {
+    "vbat": 0,
+    "pbat": 0
+  }
+}:
+
+:: Deep Sleep 6773
+
+--------
+con ip fija
+
+:: Serial init 45
+
+Connecting to: red3 :
+
+:: Wifi init 47
+:
+
+:: Mqtt init 47
+:
+
+:: Bat sensor 99
+...........
+Wifi connected. IP address: 192.168.1.253
+:
+
+:: Wifi check 4072
+
+Internet OK (www.amazon.com:80 - 301)
+:
+
+:: Internet check 5146
+.
+Connected to mqtt iot.martindb.com.ar
+:
+
+:: Mqtt check 5795
+:
+
+:: Mqtt send 6186
+{
+  "connectivity": {
+    "gprs": false,
+    "wifi": true,
+    "internet": true,
+    "mqtt": true,
+    "mqtt sent": true,
+    "sms sent": false
+  },
+  "power": {
+    "vbat": 0,
+    "pbat": 0
+  }
+}:
+
+:: Deep Sleep 6199
+
+--------------
+estado del wifi en RTC
+
+:: Serial init 45
+
+Connecting to: red3 :
+
+:: Wifi init 48
+:
+
+:: Mqtt init 48
+:
+
+:: Bat sensor 99
+:
+
+:: Wifi check 1151
+
+Internet OK (www.amazon.com:80 - 301)
+:
+
+:: Internet check 2179
+.
+Connected to mqtt iot.martindb.com.ar
+:
+
+:: Mqtt check 2627
+:
+
+:: Mqtt send 3006
+{
+  "connectivity": {
+    "gprs": false,
+    "wifi": true,
+    "internet": true,
+    "mqtt": true,
+    "mqtt sent": true,
+    "sms sent": false
+  },
+  "power": {
+    "vbat": 0,
+    "pbat": 0
+  }
+}:
+
+:: Deep Sleep 3020

@@ -3,10 +3,24 @@
 #include <ArduinoHttpClient.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
+extern "C"
+{
+#include "user_interface.h"
+}
 
 WiFiClient wifi_client;
 StaticJsonDocument<300> doc;
 PubSubClient mqttClient;
+
+// The ESP8266 RTC memory is arranged into blocks of 4 bytes. The access methods read and write 4 bytes at a time,
+// so the RTC data structure should be padded to a 4-byte multiple.
+struct
+{
+  uint32_t crc32;   // 4 bytes
+  uint8_t channel;  // 1 byte,   5 in total
+  uint8_t bssid[6]; // 6 bytes, 11 in total
+  uint8_t gsmcheck;  // 1 byte,  12 in total
+} rtcData;
 
 // Ver src/config_template.h
 #include "config_home.h"
@@ -17,8 +31,11 @@ void setup() {
 
   // init general (serial, wifi, gprs, etc)
   serial_init();
+  Serial.printf("\n\n::: Serial init %ld\n", millis());
   wifi_init();
+  Serial.printf("\n\n::: Wifi init %ld\n", millis());
   mqtt_init();
+  Serial.printf("\n\n::: Mqtt init %ld\n", millis());
 
   // conexion gprs
   boolean gprs_conn = false;
@@ -32,10 +49,12 @@ void setup() {
   Vvalue = bat_voltage(A0);
   doc["power"]["vbat"] = Vvalue;
   doc["power"]["pbat"] = bat_percentage(Vvalue);
+  Serial.printf("\n\n::: Bat sensor %ld\n", millis());
 
   // wifi?
   boolean wifi_conn = wifi_check();
   doc["connectivity"]["wifi"] = wifi_conn;
+  Serial.printf("\n\n::: Wifi check %ld\n", millis());
 
   // internet?
   boolean internet_conn = false;
@@ -53,6 +72,7 @@ void setup() {
     /* Mandar por aca la verificacion de internet*/
     Serial.println("No hay wifi, pruebo internet por GPRS");
   }
+  Serial.printf("\n\n::: Internet check %ld\n", millis());
 
   // MQTT?
   boolean mqtt_conn = false;
@@ -68,7 +88,7 @@ void setup() {
 
     doc["connectivity"]["mqtt"] = mqtt_conn;
   }
-
+  Serial.printf("\n\n::: Mqtt check %ld\n", millis());
 
   // send json
   boolean mqtt_sent = false;
@@ -81,7 +101,7 @@ void setup() {
     // envio json por mqtt x internet
     // hay que setear mqtt_sent a true si salio
     //mqtt_sent = mqttClient.publish("pepe", "Hola mundo");
-    mqttClient.beginPublish("pepe", measureJson(doc), false);
+    mqttClient.beginPublish("pepe1", measureJson(doc), false);
     serializeJson(doc, mqttClient);
     mqtt_sent = mqttClient.endPublish();
     // https: // arduinojson.org/v6/how-to/use-arduinojson-with-pubsubclient/
@@ -89,6 +109,7 @@ void setup() {
     doc["connectivity"]["mqtt sent"] = mqtt_sent;
     mqttClient.disconnect();
   }
+  Serial.printf("\n\n::: Mqtt send %ld\n", millis());
 
   if(!mqtt_sent){
     // si no se puede enviar mqtt, aviso por sms...
@@ -100,7 +121,8 @@ void setup() {
   serializeJsonPretty(doc, Serial);
 
   // deep sleep
-  ESP.deepSleep(SLEEPTIME);
+  Serial.printf("\n\n::: Deep Sleep %ld\n", millis());
+  ESP.deepSleep(SLEEPTIME, WAKE_NO_RFCAL);
 }
 
 void loop() { 

@@ -36,4 +36,3 @@ Hardware:
 - DS18B20 (tengo algunos, comprar mas?)
 - optoacopladores sfh620 / tlp620 / h11aa1
 - fuente switching 5v 5a
-

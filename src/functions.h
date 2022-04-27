@@ -10,30 +10,121 @@ void serial_init() {
   }
 }
 
-void wifi_init() {
-  Serial.printf("\nConnecting to: %s ", SSID);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(SSID, PASSWORD);
+uint32_t calculateCRC32(const uint8_t *data, size_t length)
+{
+  uint32_t crc = 0xffffffff;
+  while (length--)
+  {
+    uint8_t c = *data++;
+    for (uint32_t i = 0x80; i > 0; i >>= 1)
+    {
+      bool bit = crc & 0x80000000;
+      if (c & i)
+      {
+        bit = !bit;
+      }
+
+      crc <<= 1;
+      if (bit)
+      {
+        crc ^= 0x04c11db7;
+      }
+    }
+  }
+
+  return crc;
 }
+
+void wifi_init() {
+  // IPAddress ip(192, 168, 1, 253);
+  // IPAddress gateway(192, 168, 1, 1);
+  // IPAddress subnet(255, 255, 255, 0);
+  // IPAddress dns1(192, 168, 1, 1);
+  // IPAddress dns2(8, 8, 4, 4);
+
+  // Try to read WiFi settings from RTC memory
+  bool rtcValid = false;
+  if (ESP.rtcUserMemoryRead(0, (uint32_t *)&rtcData, sizeof(rtcData)))
+  {
+    // Calculate the CRC of what we just read from RTC memory, but skip the first 4 bytes as that's the checksum itself.
+    uint32_t crc = calculateCRC32(((uint8_t *)&rtcData) + 4, sizeof(rtcData) - 4);
+    if (crc == rtcData.crc32)
+    {
+      rtcValid = true;
+    }
+  }
+
+  Serial.printf("\nConnecting to: %s ", SSID);
+  WiFi.persistent(false);
+  WiFi.mode(WIFI_STA);
+  // WiFi.config(ip, gateway, subnet, dns1, dns2);
+  // WiFi.begin(SSID, PASSWORD);
+  if (rtcValid)
+  {
+    // The RTC data was good, make a quick connection
+    WiFi.begin(SSID, PASSWORD, rtcData.channel, rtcData.bssid, true);
+  }
+  else
+  {
+    // The RTC data was not valid, so make a regular connection
+    WiFi.begin(SSID, PASSWORD);
+  }
+}
+
 
 void mqtt_init() {
   mqttClient.setServer(MQTT_BROKER_ADRESS, MQTT_PORT);
 }
 
 boolean wifi_check() {
-  unsigned int timeout = 15;
-  unsigned int counter = 0;
-  while (WiFi.status() != WL_CONNECTED)
+  // unsigned int timeout = 20;
+  // unsigned int counter = 0;
+  // while (WiFi.status() != WL_CONNECTED)
+  // {
+  //   counter++;
+  //   delay(300);
+  //   Serial.print(".");
+  //   if(counter > timeout) {
+  //     Serial.printf("\nCan't connect to wifi %s\n", SSID);
+  //     return false;
+  //   }
+  // }
+  // Serial.printf("\nWifi connected. IP address: %s\n", WiFi.localIP().toString().c_str());
+  // return true;
+  int retries = 0;
+  int wifiStatus = WiFi.status();
+  while (wifiStatus != WL_CONNECTED)
   {
-    counter++;
-    delay(1000);
-    Serial.print(".");
-    if(counter > timeout) {
-      Serial.printf("\nCan't connect to wifi %s\n", SSID);
-      return false;
+    retries++;
+    if (retries == 100)
+    {
+      // Quick connect is not working, reset WiFi and try regular connection
+      WiFi.disconnect();
+      delay(10);
+      WiFi.forceSleepBegin();
+      delay(10);
+      WiFi.forceSleepWake();
+      delay(10);
+      WiFi.begin(SSID, PASSWORD);
     }
+    if (retries == 600)
+    {
+      // Giving up after 30 seconds and going back to sleep
+      WiFi.disconnect(true);
+      delay(1);
+      WiFi.mode(WIFI_OFF);
+      ESP.deepSleep(SLEEPTIME);
+      //return; // Not expecting this to be called, the previous call will never return.
+    }
+    delay(50);
+    wifiStatus = WiFi.status();
   }
-  Serial.printf("\nWifi connected. IP address: %s\n", WiFi.localIP().toString().c_str());
+
+  // Write current connection info back to RTC
+  rtcData.channel = WiFi.channel();
+  memcpy(rtcData.bssid, WiFi.BSSID(), 6); // Copy 6 bytes of BSSID (AP's MAC address)
+  rtcData.crc32 = calculateCRC32(((uint8_t *)&rtcData) + 4, sizeof(rtcData) - 4);
+  ESP.rtcUserMemoryWrite(0, (uint32_t *)&rtcData, sizeof(rtcData));
   return true;
 }
 
@@ -46,7 +137,7 @@ boolean mqtt_check(WiFiClient &client) {
     mqttClient.connect(HOSTNAME, MQTT_USER, MQTT_PASS);
     counter++;
     Serial.print(".");
-    delay(1000);
+    delay(100);
     if (counter > timeout)
     {
       Serial.printf("\nCan't connect to mqtt %s\n", MQTT_BROKER_ADRESS);
