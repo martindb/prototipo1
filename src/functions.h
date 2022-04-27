@@ -1,15 +1,6 @@
 #ifndef FUNCTIONS
 #define FUNCTIONS
 
-void serial_init() {
-  Serial.begin(74880);
-  Serial.setTimeout(2000);
-  // Wait for serial to initialize.
-  while (!Serial)
-  {
-  }
-}
-
 uint32_t calculateCRC32(const uint8_t *data, size_t length)
 {
   uint32_t crc = 0xffffffff;
@@ -33,6 +24,15 @@ uint32_t calculateCRC32(const uint8_t *data, size_t length)
   }
 
   return crc;
+}
+
+void serial_init() {
+  Serial.begin(74880);
+  Serial.setTimeout(2000);
+  // Wait for serial to initialize.
+  while (!Serial)
+  {
+  }
 }
 
 void wifi_init() {
@@ -63,14 +63,18 @@ void wifi_init() {
   {
     // The RTC data was good, make a quick connection
     WiFi.begin(SSID, PASSWORD, rtcData.channel, rtcData.bssid, true);
+    if(rtcData.gsmcheck >= 200) {
+      rtcData.gsmcheck = 0;
+    }
   }
   else
   {
     // The RTC data was not valid, so make a regular connection
     WiFi.begin(SSID, PASSWORD);
+    rtcData.gsmcheck = 0;
   }
+  Serial.printf("\n### gsmcheck: %d\n", rtcData.gsmcheck);
 }
-
 
 void mqtt_init() {
   mqttClient.setServer(MQTT_BROKER_ADRESS, MQTT_PORT);
@@ -110,11 +114,12 @@ boolean wifi_check() {
     if (retries == 600)
     {
       // Giving up after 30 seconds and going back to sleep
-      WiFi.disconnect(true);
-      delay(1);
-      WiFi.mode(WIFI_OFF);
-      ESP.deepSleep(SLEEPTIME);
+      // WiFi.disconnect(true);
+      // delay(1);
+      // WiFi.mode(WIFI_OFF);
+      // ESP.deepSleep(SLEEPTIME);
       //return; // Not expecting this to be called, the previous call will never return.
+      return false;
     }
     delay(50);
     wifiStatus = WiFi.status();
@@ -123,6 +128,7 @@ boolean wifi_check() {
   // Write current connection info back to RTC
   rtcData.channel = WiFi.channel();
   memcpy(rtcData.bssid, WiFi.BSSID(), 6); // Copy 6 bytes of BSSID (AP's MAC address)
+  rtcData.gsmcheck++;
   rtcData.crc32 = calculateCRC32(((uint8_t *)&rtcData) + 4, sizeof(rtcData) - 4);
   ESP.rtcUserMemoryWrite(0, (uint32_t *)&rtcData, sizeof(rtcData));
   return true;
