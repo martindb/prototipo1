@@ -177,7 +177,7 @@ double bat_voltage(int pin) {
     v = v + analogRead(pin);
     delay(5);
   }
-  v = v / 10 / 1024 * 5.2;
+  v = v / 10 / 1024 * 5.245;
   v = (int)(v * 100 + 0.5) / 100.0;
   return v;
 }
