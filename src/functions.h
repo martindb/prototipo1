@@ -222,13 +222,18 @@ int bat_percentage(double voltage) {
   // }
 
   int perc;
+  double vmin = 3;
+  double vmax = 4.15;
 
-  perc = ((voltage - 3) / (4.15 - 3)) * 100;
-  if (perc < 100)
-    return perc;
-  else
+  perc = ((voltage - vmin) / (vmax - vmin)) * 100;
+
+  if(perc > 100)
     return 100.0f;
+  
+  if(perc < 0)
+    return 0;
 
+  return perc;
 }
 
 #endif
