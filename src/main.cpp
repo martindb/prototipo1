@@ -58,7 +58,7 @@ void setup() {
   boolean gprs_conn = false;
   doc["connectivity"]["gsmcheck"] = rtcData.gsmcheck;
 
-  if (rtcData.gsmcheck == 0)
+  if (rtcData.gsmcheck == 1)
   {
     // Aca hay que chequear el gsm/gprs
     doc["connectivity"]["gprs"] = gprs_conn;

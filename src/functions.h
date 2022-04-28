@@ -36,12 +36,6 @@ void serial_init() {
 }
 
 void wifi_init() {
-  // IPAddress ip(192, 168, 1, 253);
-  // IPAddress gateway(192, 168, 1, 1);
-  // IPAddress subnet(255, 255, 255, 0);
-  // IPAddress dns1(192, 168, 1, 1);
-  // IPAddress dns2(8, 8, 4, 4);
-
   // Try to read WiFi settings from RTC memory
   bool rtcValid = false;
   if (ESP.rtcUserMemoryRead(0, (uint32_t *)&rtcData, sizeof(rtcData)))
@@ -57,13 +51,11 @@ void wifi_init() {
   Serial.printf("\nConnecting to: %s ", SSID);
   WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
-  // WiFi.config(ip, gateway, subnet, dns1, dns2);
-  // WiFi.begin(SSID, PASSWORD);
   if (rtcValid)
   {
     // The RTC data was good, make a quick connection
     WiFi.begin(SSID, PASSWORD, rtcData.channel, rtcData.bssid, true);
-    if(rtcData.gsmcheck >= 200) {
+    if(rtcData.gsmcheck >= GSMCHECK) {
       rtcData.gsmcheck = 0;
     }
   }
@@ -81,20 +73,7 @@ void mqtt_init() {
 }
 
 boolean wifi_check() {
-  // unsigned int timeout = 20;
-  // unsigned int counter = 0;
-  // while (WiFi.status() != WL_CONNECTED)
-  // {
-  //   counter++;
-  //   delay(300);
-  //   Serial.print(".");
-  //   if(counter > timeout) {
-  //     Serial.printf("\nCan't connect to wifi %s\n", SSID);
-  //     return false;
-  //   }
-  // }
-  // Serial.printf("\nWifi connected. IP address: %s\n", WiFi.localIP().toString().c_str());
-  // return true;
+
   int retries = 0;
   int wifiStatus = WiFi.status();
   while (wifiStatus != WL_CONNECTED)
@@ -113,12 +92,7 @@ boolean wifi_check() {
     }
     if (retries == 600)
     {
-      // Giving up after 30 seconds and going back to sleep
-      // WiFi.disconnect(true);
-      // delay(1);
-      // WiFi.mode(WIFI_OFF);
-      // ESP.deepSleep(SLEEPTIME);
-      //return; // Not expecting this to be called, the previous call will never return.
+      // Giving up after 30 seconds
       return false;
     }
     delay(50);
@@ -183,44 +157,6 @@ double bat_voltage(int pin) {
 }
 
 int bat_percentage(double voltage) {
-
-  // float fVoltageMatrix[22][2] = {
-  //     {4.2, 100},
-  //     {4.15, 95},
-  //     {4.11, 90},
-  //     {4.08, 85},
-  //     {4.02, 80},
-  //     {3.98, 75},
-  //     {3.95, 70},
-  //     {3.91, 65},
-  //     {3.87, 60},
-  //     {3.85, 55},
-  //     {3.84, 50},
-  //     {3.82, 45},
-  //     {3.80, 40},
-  //     {3.79, 35},
-  //     {3.77, 30},
-  //     {3.75, 25},
-  //     {3.73, 20},
-  //     {3.71, 15},
-  //     {3.69, 10},
-  //     {3.61, 5},
-  //     {3.27, 0},
-  //     {0, 0}};
-
-  // int i, perc;
-
-  // perc = 100;
-
-  // for (i = 20; i >= 0; i--)
-  // {
-  //   if (fVoltageMatrix[i][0] >= voltage)
-  //   {
-  //     perc = fVoltageMatrix[i + 1][1];
-  //     break;
-  //   }
-  // }
-
   int perc;
   double vmin = 3;
   double vmax = 4.15;

@@ -12,6 +12,7 @@
 #define PORT1 80
 #define INTERNET2 "www.google.com"
 #define PORT2 80
+#define GSMCHECK 50
 
 // MQTT
 #define MQTT_BROKER_ADRESS "xxxx.pepe.com"
